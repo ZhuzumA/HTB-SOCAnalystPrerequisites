@@ -5,11 +5,20 @@ Today, I learned about how improtant **working environment**, including how fire
 
 ### Key Takeaways
 - **Folder structure**: Proper organization helps us in both keeping track of everything and finding errors in our processes.
-- **Importance of a Goal**: Without a goal, we move chaotically and are less motivated to complete tasks because we don’t understand the purpose behind them.
-- **Decision Making**: If we do not know what to do in one situation or another, the reason is usually that we have not gathered enough facts to make a good decision. 
-- **The Relationship-Oriented-Questioning (ROQ) Model**: the model helps clarify what information is needed and how to connect the known and unknown elements of a situation. 
+- **Importance of a Password Manager**: It's impossible to remember all of our password information, which is why using a Password Manager can be incredibly helpful. Many password managers offer up to 5GB of storage space, 1Password for instance, to securely save all  passwords and authorization details, complete with Multi-Factor Authentication (MFA) for added security.
+- **Note Taking**: Taking notes is a crucial part of cybersecurity. We accumulate a lot of details during investigations or penetration testing, and it's impossible to remember everything without proper documentation. 
+- **Virtualization**: is an abstraction of physical computing recourses.  
 
 ### Reflections
 
 **Folder structure**
 Just an example of organization of our folder structure: 
+![Example of folder structure](images/structure.png)
+
+**Note Taking**
+There are five different main types of information that need to be noted down:
+1. Newly discovered information: such as new IP addresses, usernames, passwords, source code, etc., that we identified and are related to the penetration testing engagement and process. This is information that we can use against our target company. We often obtain such information through OSINT, active scans, and manual analysis of the given information resources and services. 
+2. Ideas for further tests and processing We will receive a lot of different information during our penetration testing that will require us to adapt our approach. These results may give us ideas for subsequent steps we can take, and other vulnerabilities or misconfigurations may be forgotten or overlooked. Therefore, we should get in the habit of noting down everything we see that should be investigated as part of the assessment. *Notion.so*, *Obsidian* and *Xmind* are very suitable for this.
+3. Scan results: we can use *GhostWriter* or *Pwndoc*. These allow us to generate our documentation and have a clear overview of the steps we have taken.
+4. Logging: is essential for both documentation and protection. If third parties attack company during our penetration testing and damage occure, we can prove that the damage did not result from our activities. 
+5. Screenshots serve as a momentary record and represent proof of results obtained, necessary for the Proof-Of-Concept and our documentation. One of the best tools for this is *Flameshot*. It has all the essential functions that we need to quickly edit our screenshots without using an additional editing program. We can install it using our APT package manager or via download from Github.
