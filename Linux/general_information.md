@@ -1,7 +1,7 @@
 # Learning Dependecies
 
 ## 19th November 2024
-Today, I learned about **Linux**, **Windows OS**, and **Virtual Private Server**. How to install them and make basic configurations. 
+Today, I learned about **Linux history**, **Linux's distros**, **how to customize promts** and **ho to connect remotely through SSH**.  
 
 
 ### Key Takeaways
