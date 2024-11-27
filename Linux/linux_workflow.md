@@ -67,8 +67,51 @@ And here is an explonation of parameters:
 - <span style="color:lightgreen"> *wc*</span>  counts lines, words, and characters in a file
 
 ## Regular Expressions
-- <span style="color:lightgreen"> *wc*</span>
+A regular expression (regex) in Linux is like a powerful search tool. It’s a pattern of characters used to match, find, and manipulate text. Think of it as a way to describe what you’re looking for in a file or command output.
 
+**Key Ideas**:
+1. Match Characters: Use simple patterns to find specific text.
+*Example*: `cat file.txt | grep "error"` - looks for the word "error" in a file.
+2. Special Symbols:
+- `.`: Matches any single character.
+*Example*: `b.t` matches "bat", "bit", or "bot".
+- `*`: Matches zero or more of the previous character.
+*Example*: `ab*` matches "a", "ab", or "abb".
+- `[]`: Matches any character inside the brackets.
+*Example*: `[aeiou]` matches vowels.
+- `^`: Matches the start of a line.
+*Example*: `^Error` matches lines starting with "Error".
+- `$`: Matches the end of a line.
+*Example*: `log$` matches lines ending with "log".
+3. Combine Patterns:
+I can mix these symbols to build powerful search patterns.
+
+**Grouping**
+Among other things, regex offers us the possibility to group the desired search patterns. Basically, regex follows three different concepts, which are distinguished by the three different brackets:
+Operators       Description
+`(a)`           to group parts of a regex, Inside the brackets, I can define further patterns which should be processed together.
+`[a-z]`         to define character classes. Inside the brackets, I can specify a list of characters to search for.
+`{1,10}`        to define quantifiers. Inside the brackets, I can specify a number or a range that indicates how often a previous pattern should be repeated.
+`|`             Also called the OR operator and shows results when one of the two expressions matches
+`.*`            Also called the AND operator and displayed results only if both expressions match
+To use these operators, you need to apply the extended regex using the `-E` option in grep.
+
+
+**Permission Managment**
+The whole permission system on Linux systems is based on the octal number system, and basically, there are three different types of permissions a file or directory can be assigned:
+- `(r)` - Read;
+- `(w)` - Write;
+- `(x)` - Execute;
+The permissions can be set for the *owner*, *group*, and *others* like presented in the next example with their corresponding permissions:
+
+![Permission Managment](/Linux/resources/permission.png)
+
+We can modify permissions using the `chmod` command, permission group references (`u` - owner, `g` - Group, `o` - others, `a` - All users), and either a [`+`] or a [`-`] to add remove the designated permissions. In the following example, let us assume we have a file called `shell` and we want to change permissions for it so this script is owned by that user, becomes not executable, and set with read/write permissions for all users.
+Example to apply `read` permissions for all users and see the result:
+`chmod a+r shell && ls -l shell`
+
+To change the owner and/or the group assignments of a file or directory, we can use the `chown` command. The syntax is like following:
+![Usinf chown command](/Linux/resources/permission-owner-change.png)
 
 **Practical Excersices** 
 1. Used this command to resolve the problem: 
@@ -98,3 +141,9 @@ The file we will need to work with is the /etc/passwd file on our target and we 
 `ss -l -4 | grep -v "127\.0\.0" | grep "LISTEN" | wc -l`
 13. Use cURL from your Pwnbox (not the target machine) to obtain the source code of the "https://www.inlanefreight.com" website and filter all unique paths of that domain. Submit the number of these paths as the answer.
 `curl https://www.inlanefreight.com | tr " " “\n” | grep “www.inlanefreight.com” | tr “'” ‘"’ | cut -d’"’ -f2 | sort -u | wc -l`
+
+Regular Expression excersices:
+14. Show all lines that do not contain the `#` character in specific file:
+`grep -E "#" /etc/ssh/sshd_config`
+15. Search for all lines beginning with Password and containing yes.
+`grep -E "(Password.*yes)" etc/ssh/sshd_config`
