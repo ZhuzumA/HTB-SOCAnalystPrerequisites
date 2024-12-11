@@ -131,3 +131,135 @@ If we want to connect to an OpenVPN server, we can use the `.ovpn` file we recei
 
 An alternative to curl is the tool wget. With this tool, we can download files from FTP or HTTP servers directly from the terminal, and it serves as a good download manager. If we use wget in the same way, the difference to curl is that the website content is downloaded and stored locally, as shown in the following example:
 ![wget command and its output](/Linux/resources/wget.png)
+
+## Backup and Restore
+When backing up data on an Ubuntu system, I can utilize tools such as:
+- Rsync
+- Deja Dup
+- Duplicity
+Rsync is an open-source tool that allows us to quickly and securely back up files and folders to a remote location. It is particularly useful for transferring large amounts of data over the network, as it only transmits the changed parts of a file. It can also be used to create backups locally or on remote servers. If we need to back up large amounts of data over the network, Rsync might be the better option.
+
+Duplicity is another graphical backup tool for Ubuntu that provides users with comprehensive data protection and secure backups. It also uses Rsync as a backend and additionally offers the possibility to encrypt backup copies and store them on remote storage media, such as FTP servers, or cloud storage services, such as Amazon S3.
+
+Deja Dup is a graphical backup tool for Ubuntu that simplifies the backup process, allowing us to quickly and easily back up our data. It provides a user-friendly interface to create backup copies of data on local or remote storage media. It uses Rsync as a backend and also supports data encryption.
+
+In order to ensure the security and integrity of backups, we should take steps to encrypt their backups. Encrypting backups ensures that sensitive data is protected from unauthorized access. Alternatively, we can encrypt backups on Ubuntu systems by utilizing tools such as GnuPG, eCryptfs, and LUKS.
+
+In order to install Rsync on Ubuntu, we can use the apt package manager:
+`sudo apt install rsync -y`
+
+To backup an entire directory using rsync, we can use the following command:
+`rsync -av /path/to/mydirectory user@backup_server:/path/to/backup/directory`
+
+This command will copy the entire directory `/path/to/mydirectory` to a remote host `backup_server`, to the directory `/path/to/backup/directory`. The option archive `-a` is used to preserve the original file attributes, such as permissions, timestamps, etc., and using the `verbose -v` option provides a detailed output of the progress of the `rsync` operation.
+
+We can also add additional options to customize the backup process, such as using compression and incremental backups:
+`rsync -avz --backup --backup-dir=/path/to/backup/folder --delete /path/to/mydirectory user@backup_server:/path/to/backup/directory`
+
+With this, we back up the `mydirectory` to the remote `backup_server`, preserving the original file attributes, timestamps, and permissions, and enabled compression `-z` for faster transfers. The `--backup` option creates incremental backups in the directory `/path/to/backup/folder`, and the `--delete` option removes files from the remote host that is no longer present in the source directory.
+
+To restore the directory from the backup server to the local directory:
+`rsync -av user@remote_host:/path/to/backup/directory /path/to/mydirectory`
+
+# Encrypted Rsync
+To ensure the security of our rsync file transfer between our local host and our backup server, we can combine the use of SSH and other security measures. By using SSH, we are able to encrypt our data as it is being transferred, making it much more difficult for any unauthorized individual to access it. 
+## **##File System Management**
+
+---
+
+File system management on Linux is a complex process that involves organizing and maintaining the data stored on a disk or other storage device. Linux is a powerful operating system that supports a wide range of file systems, including `ext2`, `ext3`, `ext4`, `XFS`, `btrfs`, `NTFS`, and more.
+
+The Linux file system is based on the Unix file system, which is a hierarchical structure that is composed of various components. At the top of this structure is the inode table, the basis for the entire file system. The inode table is a table of information associated with each file and directory on a Linux system. Inodes contain metadata about the file or directory, such as its permissions, size, type, owner, and so on. The inode table is like a database of information about every file and directory on a Linux system, allowing the operating system to quickly access and manage files. Files can be stored in the Linux file system in one of two ways:
+
+- Regular files
+- Directories
+
+Regular files are the most common type of file, and they are stored in the root directory of the file system. Directories are used to store collections of files. When a file is stored in a directory, the directory is known as the parent directory for the files. In addition to regular files and directories, Linux also supports symbolic links, which are references to other files or directories. Symbolic links can be used to quickly access files that are located in different parts of the file system.
+
+Disk management on Linux involves managing physical storage devices, including hard drives, solid-state drives, and removable storage devices. The main tool for disk management on Linux is the `fdisk`, which allows us to create, delete, and manage partitions on a drive. It can also display information about the partition table, including the size and type of each partition.
+
+Each logical partition or drive needs to be assigned to a specific directory on Linux. This process is called mounting. Mounting involves attaching a drive to a specific directory, making it accessible to the file system hierarchy. Once a drive is mounted, it can be accessed and manipulated just like any other directory on the system. The `mount` tool is used to mount file systems on Linux, and the `/etc/fstab` file is used to define the default file systems that are mounted at boot time.
+
+##Containerization 
+
+Containerization is a process of packaging and running applications in isolated environments, such as a container, virtual machine, or serverless environment. Technologies like Docker, Docker Compose, and Linux Containers make this process possible in Linux systems. These technologies allow users to create, deploy, and manage applications quickly, securely, and efficiently. With these tools, users can configure their applications in various ways, allowing them to tailor the application to their needs. Additionally, containers are incredibly lightweight, perfect for running multiple applications simultaneously and providing scalability and portability. Containerization is a great way to ensure that applications are managed and deployed efficiently and securely.
+
+#Docker 
+
+Docker is an open-source platform for automating the deployment of applications as self-contained units called containers. It uses a layered filesystem and resource isolation features to provide flexibility and portability. Additionally, it provides a robust set of tools for creating, deploying, and managing applications, which helps streamline the containerization process.
+
+```bash
+#!/bin/bash# Preparation
+sudo apt update -y
+sudo apt install ca-certificates curl gnupg lsb-release -y
+sudo mkdir -m 0755 -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Install Docker Engine
+sudo apt update -y
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+
+# Add user htb-student to the Docker group
+sudo usermod -aG docker htb-student
+echo '[!] You need to log out and log back in for the group changes to take effect.'
+
+# Test Docker installation
+docker run hello-world
+```
+
+|Command|Description|
+
+|—-|—-|
+
+|docker ps|list all running containers|
+
+|docker stop|Stop a running container|
+
+|docker start|Start a stopped container|
+
+|docker restart|Restart a running container|
+
+|docker rm|Remove a container|
+
+|docker rmi|Remove a docker image|
+
+|docker logs|View the log of a container|
+
+#Linux containers
+
+Linux Containers (`LXC`) is a virtualization technology that allows multiple isolated Linux systems to run on a single host. It uses resource isolation features, such as `cgroups` and `namespaces`, to provide a lightweight virtualization solution. LXC also provides a rich set of tools and APIs for managing and configuring containers, contributing to its popularity as a containerization technology. By combining the advantages of LXC with the power of Docker, users can achieve a fully-fledged containerization experience in Linux systems.
+
+Both LXC and Docker are containerization technologies that allow for applications to be packaged and run in isolated environments. However, there are some differences between the two that can be distinguished based on the following categories:
+
+- Approach
+- Image building
+- Portability
+- Easy of use
+- Security
+
+LXC is a lightweight virtualization technology that uses resource isolation features of the Linux kernel to provide an isolated environment for applications.
+
+### **Managing LXC Containers**
+
+When working with LXC containers, several tasks are involved in managing them. These tasks include creating new containers, configuring their settings, starting and stopping them as necessary, and monitoring their performance.
+
+| **Command** | **Description** |
+| --- | --- |
+| `lxc-ls` | List all existing containers |
+| `lxc-stop -n <container>` | Stop a running container. |
+| `lxc-start -n <container>` | Start a stopped container. |
+| `lxc-restart -n <container>` | Restart a running container. |
+| `lxc-config -n <container name> -s storage` | Manage container storage |
+| `lxc-config -n <container name> -s network` | Manage container network settings |
+| `lxc-config -n <container name> -s security` | Manage container security settings |
+| `lxc-attach -n <container>` | Connect to a container. |
+| `lxc-attach -n <container> -f /path/to/share` | Connect to a container and share a specific directory or file. |
+
+It is important to configure LXC container security to prevent unauthorized access or malicious activities inside the container. This can be achieved by implementing several security measures, such as:
+
+- Restricting access to the container
+- Limiting resources
+- Isolating the container from the host
+- Enforcing mandatory access control
+- Keeping the container up to date
