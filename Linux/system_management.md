@@ -263,3 +263,105 @@ It is important to configure LXC container security to prevent unauthorized acce
 - Isolating the container from the host
 - Enforcing mandatory access control
 - Keeping the container up to date
+
+## **Network Configuration**
+
+Network access control is another critical component of network configuration. Different NAC technologies available:
+
+- Discretionary access control (DAC)
+- Mandatory access control (MAC)
+- Role-based access control (RBAC)
+
+Monitoring network traffic is also an essential part of network configuration. Therefore, we should know how to configure network monitoring and logging and be able to analyze network traffic for security purposes. Tools such as syslog, rsyslog, ss, lsof, and the ELK stack can be used to monitor network traffic and identify security issues.
+
+### Configuring Network Interfaces
+
+When working with Ubuntu, you can configure local network interfaces using the `ifconfig` or the `ip` command. These powerful commands allow us to view and configure our system's network interfaces.
+
+One way to obtain information regarding network interfaces, such as IP addresses, netmasks, and status, is by using the `ifconfig` command. By executing this command, we can view the available network interfaces and their respective attributes in a clear and organized manner. This information can be particularly useful when troubleshooting network connectivity issues or setting up a new network configuration. It should be noted that the `ifconfig` command has been deprecated in newer versions of Linux and replaced by the `ip` command, which offers more advanced features. Nevertheless, the `ifconfig` command is still widely used in many Linux distributions and continues to be a reliable tool for network management.
+
+**Activate Network Interface**
+
+```bash
+sudo ifconfig eth0 up     
+sudo ip link set eth0 up
+```
+
+One way to allocate an IP address to a network interface is by utilizing the `ifconfig` command. We must specify the interface's name and IP address as arguments to do this. This is a crucial step in setting up a network connection
+
+`sudo ipconfig eth0 192.168.1.2`
+
+To set the netmask for a network interface:
+
+`sudo ipconfig eth0 netmask 255.255.255.0`
+
+When we want to set the default gateway for a network interface, we can use the `route` command with the `add` option. By setting the default gateway, we are designating the IP address of the router that will be used to send traffic to destinations outside the local network:
+
+`sudo route add default gw 192.168.1.1 eth0`
+
+When configuring a network interface, it is often necessary to set Domain Name System (`DNS`) servers to ensure proper network functionality. Setting up DNS can be achieved by updating the `/etc/resolv.conf` file with the appropriate DNS server information. The `/etc/resolv.conf` file is a plain text file containing the system's DNS information. It is important to note that any changes made to this file will only apply to the current session and must be updated if the system is restarted or the network configuration is changed.
+
+`sudo vim /etc/resolv.conf`
+
+After completing the necessary modifications to the network configuration, it is essential to ensure that these changes are saved to persist across reboots. This can be achieved by editing the `/etc/network/interfaces` file, which defines network interfaces for Linux-based operating systems. Thus, it is vital to save any changes made to this file to avoid any potential issues with network connectivity:
+
+`sudo vim /etc/network/interfaces`
+
+This will open the `interfaces` file in the vim editor. We can add the network configuration settings to the file like this:
+
+![An example to add information to the interfaces]()
+
+By setting the `eth0` network interface to use a static IP address of `192.168.1.2`, with a netmask of `255.255.255.0` and a default gateway of `192.168.1.1`, we can ensure that your network connection remains stable and reliable. Additionally, by specifying DNS servers of `8.8.8.8` and `8.8.4.4`, we can ensure that our computer can easily access the internet and resolve domain names. Once we have made these changes to the configuration file, saving the file and exiting the editor is important. After that, we must restart the networking service to apply the changes:
+
+`sudo systemctl restart networking`
+
+Various tools can help us identify and resolve issues regarding network troubleshooting on Linux systems. Some of the most commonly used tools include:
+
+1. Ping
+2. Traceroute
+3. Netstat
+4. Tcpdump
+5. Wireshark
+6. Nmap
+
+The most common network issues we will encounter during our penetration tests include the following:
+
+- Network connectivity issues
+- DNS resolution issues (it's always DNS)
+- Packet loss
+- Network performance issues
+
+Each issue, along with common causes that may include misconfigured firewalls or routers, damaged network cables or connectors, incorrect network settings, hardware failure, incorrect DNS server settings, DNS server failure, misconfigured DNS records, network congestion, outdated network hardware, incorrectly configured network settings, unpatched software or firmware, and lack of proper security controls. 
+
+### Hardening
+
+Several mechanisms are highly effective in securing Linux systems in keeping our and other companies' data safe. Three such mechanisms are SELinux, AppArmor, and TCP wrappers. These tools are designed to safeguard Linux systems against various security threats, from unauthorized access to malicious attacks, especially while conducting a penetration test. 
+
+SELinux is a MAC system that is built into the Linux kernel. It is designed to provide fine-grained access control over system resources and applications. SELinux works by enforcing a policy that defines the access controls for each process and file on the system. It provides a higher level of security by limiting the damage that a compromised process can do.
+
+AppArmor is also a MAC system that provides a similar level of control over system resources and applications, but it works slightly differently. AppArmor is implemented as a Linux Security Module (LSM) and uses application profiles to define the resources that an application can access. AppArmor is typically easier to use and configure than SELinux but may not provide the same level of fine-grained control.
+
+TCP wrappers are a host-based network access control mechanism that can be used to restrict access to network services based on the IP address of the client system. It works by intercepting incoming network requests and comparing the IP address of the client system to the access control rules. These are useful for limiting access to network services from unauthorized systems.
+
+### Exercises done:
+
+ 
+
+### **SELinux**
+
+1. Install SELinux on your VM.
+2. Configure SELinux to prevent a user from accessing a specific file.
+3. Configure SELinux to allow a single user to access a specific network service but deny access to all others.
+4. Configure SELinux to deny access to a specific user or group for a specific network service.
+
+### **AppArmor**
+
+1. Configure AppArmor to prevent a user from accessing a specific file.
+2. Configure AppArmor to allow a single user to access a specific network service but deny access to all others.
+3. Configure AppArmor to deny access to a specific user or group for a specific network service.
+
+### **TCP Wrappers**
+
+1. Configure TCP wrappers to allow access to a specific network service from a specific IP address.
+2. Configure TCP wrappers to deny access to a specific network service from a specific IP address.
+3. Configure TCP wrappers to allow access to a specific network service from a range of IP addresses.
