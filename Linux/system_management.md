@@ -333,35 +333,63 @@ The most common network issues we will encounter during our penetration tests in
 
 Each issue, along with common causes that may include misconfigured firewalls or routers, damaged network cables or connectors, incorrect network settings, hardware failure, incorrect DNS server settings, DNS server failure, misconfigured DNS records, network congestion, outdated network hardware, incorrectly configured network settings, unpatched software or firmware, and lack of proper security controls. 
 
-### Hardening
+## Remote desktop protocols in linux
+Remote desktop protocols are used in Windows, Linux, and macOS to provide graphical remote access to a system. The administrators can utilize remote desktop protocols in many scenarios like troubleshooting, software or system upgrading, and remote systems administration. The administrator needs to connect to the remote system they will administer remotely, and therefore, they use the appropriate protocol accordingly. In addition, they can log in using different protocols if they want to install an application on their remote system. The most common protocols for this usage are RDP (Windows) and VNC (Linux).
 
-Several mechanisms are highly effective in securing Linux systems in keeping our and other companies' data safe. Three such mechanisms are SELinux, AppArmor, and TCP wrappers. These tools are designed to safeguard Linux systems against various security threats, from unauthorized access to malicious attacks, especially while conducting a penetration test. 
+The XServer is the user-side part of the `X Window System network protocol` (`X11` / `X`). The `X11` is a fixed system that consists of a collection of protocols and applications that allow us to call application windows on displays in a graphical user interface. The ports that are utilized for X server are typically located in the range of `TCP/6001-6009`, allowing communication between the client and server. When starting a new desktop session via X server the `TCP port 6000` would be opened for the first X display `:0`. This range of ports enables the server to perform its tasks such as hosting applications, as well as providing services to clients. 
 
-SELinux is a MAC system that is built into the Linux kernel. It is designed to provide fine-grained access control over system resources and applications. SELinux works by enforcing a policy that defines the access controls for each process and file on the system. It provides a higher level of security by limiting the damage that a compromised process can do.
+X11's significant disadvantage is the unencrypted data transmission. However, this can be overcome by tunneling the SSH protocol.
 
-AppArmor is also a MAC system that provides a similar level of control over system resources and applications, but it works slightly differently. AppArmor is implemented as a Linux Security Module (LSM) and uses application profiles to define the resources that an application can access. AppArmor is typically easier to use and configure than SELinux but may not provide the same level of fine-grained control.
+For this, we have to allow X11 forwarding in the SSH configuration file (`/etc/ssh/sshd_config`) on the server that provides the application by changing this option to `yes`.
 
-TCP wrappers are a host-based network access control mechanism that can be used to restrict access to network services based on the IP address of the client system. It works by intercepting incoming network requests and comparing the IP address of the client system to the access control rules. These are useful for limiting access to network services from unauthorized systems.
+Remote desctop protocol in Linux: 
 
-### Exercises done:
+```
+cat /etc/ssh/sshd_config | grep X11Forwarding
+```
 
- 
+Start the application in our client:
+`ssh -X htb-student@10.129.23.11 /usr/bin/firefox`
 
-### **SELinux**
+The `X Display Manager Control Protocol` (`XDMCP`) protocol is used by the `X Display Manager` for communication through UDP port 177 between X terminals and computers operating under Unix/Linux. It is used to manage remote X Window sessions on other machines and is often used by Linux system administrators to provide access to remote desktops. XDMCP is an insecure protocol and should not be used in any environment that requires high levels of security. 
 
-1. Install SELinux on your VM.
-2. Configure SELinux to prevent a user from accessing a specific file.
-3. Configure SELinux to allow a single user to access a specific network service but deny access to all others.
-4. Configure SELinux to deny access to a specific user or group for a specific network service.
+`Virtual Network Computing` (`VNC`) is a remote desktop sharing system based on the RFB protocol that allows users to control a computer remotely. It allows a user to view and interact with a desktop environment remotely over a network connection. The user can control the remote computer as if sitting in front of it. This is also one of the most common protocols for remote graphical connections for Linux hosts.
 
-### **AppArmor**
+VNC is generally considered to be secure. It uses encryption to ensure the data is safe while in transit and requires authentication before a user can gain access.
 
-1. Configure AppArmor to prevent a user from accessing a specific file.
-2. Configure AppArmor to allow a single user to access a specific network service but deny access to all others.
-3. Configure AppArmor to deny access to a specific user or group for a specific network service.
+Traditionally, the VNC server listens on TCP port 5900. So it offers its `display 0` there. Other displays can be offered via additional ports, mostly `590[x]`, where `x` is the display number. Adding multiple connections would be assigned to a higher TCP port like 5901, 5902, 5903, etc.
 
-### **TCP Wrappers**
+For these VNC connections, many different tools are used. Among them are for example:
 
-1. Configure TCP wrappers to allow access to a specific network service from a specific IP address.
-2. Configure TCP wrappers to deny access to a specific network service from a specific IP address.
-3. Configure TCP wrappers to allow access to a specific network service from a range of IP addresses.
+- [TigerVNC](https://tigervnc.org/)
+- [TightVNC](https://www.tightvnc.com/)
+- [RealVNC](https://www.realvnc.com/en/)
+- [UltraVNC](https://uvnc.com/)
+
+The most used tools for such kinds of connections are UltraVNC and RealVNC because of their encryption and higher security.
+
+Linux Security 
+
+All computer systems have an inherent risk of intrusion. Some present more of a risk than others, such as an internet-facing web server hosting multiple complex web applications. Linux systems are also less prone to viruses that affect Windows operating systems and do not present as large an attack surface as Active Directory domain-joined hosts. Regardless, it is essential to have certain fundamentals in place to secure any Linux system.
+
+One of the Linux operating systems' most important security measures is keeping the OS and installed packages up to date. This can be achieved with a command such as:
+
+`apt update && apt dist-upgrade`
+
+Besides, there are different applications and services such as [Snort](https://www.snort.org/), [chkrootkit](http://www.chkrootkit.org/), [rkhunter](https://packages.debian.org/sid/rkhunter), [Lynis](https://cisofy.com/lynis/), and others that can contribute to Linux's security. In addition, some security settings should be made, such as:
+
+- Removing or disabling all unnecessary services and software
+- Removing all services that rely on unencrypted authentication mechanisms
+- Ensure NTP is enabled and Syslog is running
+- Ensure that each user has its own account
+- Enforce the use of strong passwords
+- Set up password aging and restrict the use of previous passwords
+- Locking user accounts after login failures
+- Disable all unwanted SUID/SGID binaries
+
+TCP wrapper is a security mechanism used in Linux systems that allows the system administrator to control which services are allowed access to the system. It works by restricting access to certain services based on the hostname or IP address of the user requesting access. TCP wrappers use the following configuration files:
+
+- `/etc/hosts.allow`
+- `/etc/hosts.deny`
+
+In short, the `/etc/hosts.allow` file specifies which services and hosts are allowed access to the system, whereas the `/etc/hosts.deny` file specifies which services and hosts are not allowed access. These files can be configured by adding specific rules to the files.
